@@ -21,7 +21,10 @@ import com.gs.collections.api.list.MutableList;
 import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.set.mutable.UnifiedSet;
 import com.gs.collections.impl.test.Verify;
+import com.gs.fw.common.mithra.finder.Operation;
 import kata.domain.AccountBalance;
+import kata.domain.AccountBalanceAbstract;
+import kata.domain.AccountBalanceFinder;
 import kata.domain.AccountBalanceList;
 import kata.domain.Customer;
 import kata.domain.CustomerFinder;
@@ -74,8 +77,11 @@ public class ExercisesBiTemporal
 
     public double getBalanceFor(int accountId, Timestamp businessDate)
     {
-        Assert.fail("Implement this functionality to make the test pass");
-        return 0.0;
+        AccountBalanceList accountBalanceList = AccountBalanceFinder.findMany(
+            AccountBalanceFinder.accountId().eq(accountId)
+                .and(AccountBalanceFinder.businessDate().eq(businessDate))
+        );
+        return accountBalanceList.asGscList().sumOfDouble(AccountBalance::getBalance);
     }
 
     @Test
@@ -92,8 +98,10 @@ public class ExercisesBiTemporal
 
     public double getBalanceFor(int accountId, Timestamp businessDate, Timestamp processingDate)
     {
-        Assert.fail("Implement this functionality to make the test pass");
-        return 0.0;
+        Operation operation = AccountBalanceFinder.accountId().eq(accountId)
+                .and(AccountBalanceFinder.businessDate().eq(businessDate))
+                .and(AccountBalanceFinder.processingDate().eq(processingDate));
+        return AccountBalanceFinder.findMany(operation).asGscList().sumOfDouble(AccountBalance::getBalance);
     }
 
     @Test
@@ -113,17 +121,10 @@ public class ExercisesBiTemporal
 
     public double getBalanceForCustomer(int customerId, Timestamp businessDate)
     {
-        Assert.fail("Implement this functionality to make the test pass");
-        AccountBalanceList balances = null;
-        // Using some GS Collections:
-        return balances.asGscList().sumOfDouble(new DoubleFunction<AccountBalance>()
-        {
-            @Override
-            public double doubleValueOf(AccountBalance accountBalance)
-            {
-                return accountBalance.getBalance();
-            }
-        });
+        Operation operation = AccountBalanceFinder.account().customerId().eq(customerId)
+                .and(AccountBalanceFinder.businessDate().eq(businessDate));
+        AccountBalanceList balances = AccountBalanceFinder.findMany(operation);
+        return balances.asGscList().sumOfDouble(AccountBalanceAbstract::getBalance);
     }
 
     @Test

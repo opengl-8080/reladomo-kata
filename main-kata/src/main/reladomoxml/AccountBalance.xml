@@ -37,4 +37,10 @@
 
     <Attribute name="accountId" javaType="int" columnName="ACCOUNT_I" primaryKey="true"/>
     <Attribute name="balance" javaType="double" columnName="BALANCE_F"/>
+    
+    <Relationship name="account"
+                  relatedObject="CustomerAccount"
+                  cardinality="one-to-many">
+        this.accountId = CustomerAccount.accountId
+    </Relationship>
 </MithraObject>
